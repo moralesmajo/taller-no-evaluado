@@ -22,7 +22,7 @@ import jakarta.validation.constraints.NotNull;
 public class SongXPlaylist {
     @Id
     @Column(name="code")
-    private String code;
+    private Integer code;
     
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "song_code", nullable = false)
