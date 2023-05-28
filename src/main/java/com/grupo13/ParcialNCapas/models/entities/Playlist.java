@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,6 +20,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Entity
@@ -25,9 +28,10 @@ import java.util.List;
 @ToString(exclude = {"songs"})
 @NoArgsConstructor
 public class Playlist {
-    @Id
-    @Column(name="code")
-    private String code;
+	@Id
+	@Column(name = "code")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private UUID code;
 
     @NotNull(message = "El título de la playlist es obligatorio")
     @Size(max = 25, message = "El título de la playlist debe tener como máximo 25 caracteres")
