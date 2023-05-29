@@ -1,7 +1,6 @@
 package com.grupo13.ParcialNCapas.services.implementations;
 
 import java.sql.Date;
-import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
@@ -10,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.grupo13.ParcialNCapas.models.dtos.AddSongToPlaylistDTO;
 import com.grupo13.ParcialNCapas.models.dtos.PlaylistDTO;
 import com.grupo13.ParcialNCapas.models.dtos.changeNamePLaylistDTO;
 import com.grupo13.ParcialNCapas.models.entities.Playlist;
@@ -64,6 +64,7 @@ public class PlaylistServicesImpl implements PlaylistServices {
 	}
 
 	@Override
+	@Transactional(rollbackOn = Exception.class)
 	public List<Playlist> findAllByUserId(String id) throws Exception {
 		try {
 			UUID userId = UUID.fromString(id);
@@ -106,6 +107,7 @@ public class PlaylistServicesImpl implements PlaylistServices {
 	}
 
 	@Override
+	@Transactional(rollbackOn = Exception.class)
 	public void deletePLaylist(String id) throws Exception {
 		try {
 			UUID playlistId = UUID.fromString(id);
@@ -121,6 +123,7 @@ public class PlaylistServicesImpl implements PlaylistServices {
 	}
 
 	@Override
+	@Transactional(rollbackOn = Exception.class)
 	public List<Song> findSongsByPlaylistCode(String id) throws Exception {
 		UUID code = UUID.fromString(id);
 		Playlist playlist = playlistRepository.findById(code)
@@ -145,13 +148,14 @@ public class PlaylistServicesImpl implements PlaylistServices {
 	}
 
 	@Override
-	public void addSongToPlaylist(String idPlaylist, String idSong) throws Exception {
+	@Transactional(rollbackOn = Exception.class)
+	public void addSongToPlaylist(AddSongToPlaylistDTO info) throws Exception {
 		
-		UUID playlistCode = UUID.fromString(idPlaylist);
+		UUID playlistCode = UUID.fromString(info.getPlaylistCode());
 		Playlist playlist = playlistRepository.findById(playlistCode)
 				.orElseThrow(() -> new IllegalArgumentException("Playlist no encontrada"));
 		
-		UUID songCode  = UUID.fromString(idSong);
+		UUID songCode  = UUID.fromString(info.getSongCode());
 		Song song = songRepository.findById(songCode)
 				.orElseThrow(() -> new IllegalArgumentException("Cancion no encontrada"));
 		
