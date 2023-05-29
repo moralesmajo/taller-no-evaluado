@@ -141,5 +141,20 @@ public class PlaylistServicesImpl
 	            .collect(Collectors.toList());
 	}
 
+	@Override
+	public int TotalDurationOfPlaylist(String id) {
+		UUID code = UUID.fromString(id);
+		int totalDuration = 0;
+		
+		Playlist playlist = playlistRepository.findById(code)
+	            .orElseThrow(() -> new IllegalArgumentException("Playlist no encontrada"));
+
+	    for (SongXPlaylist songXPlaylist : playlist.getSongs()) {
+	        totalDuration += songXPlaylist.getSong().getDuration();
+	    }
+
+	    return totalDuration;
+	}
+
 	
 }

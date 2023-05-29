@@ -18,6 +18,7 @@ public interface PlaylistServices {
 	List<Playlist> findAll();
 	List<Playlist> findAllByUserId(String id) throws Exception;
 	List<Song> findSongsByPlaylistCode(String id) throws Exception;
+	int TotalDurationOfPlaylist(String id);
 	
 	
 }
