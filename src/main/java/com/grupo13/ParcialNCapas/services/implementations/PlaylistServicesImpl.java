@@ -70,7 +70,7 @@ public class PlaylistServicesImpl implements PlaylistServices {
 			UUID userId = UUID.fromString(id);
 			User user = userRepository.findById(userId).orElseThrow(() -> new Exception("Usuario no encontrado"));
 
-			return playlistRepository.findAllByUserId(user);
+			return playlistRepository.findAllByUser(user);
 		} catch (IllegalArgumentException e) {
 			throw new Exception("ID ingresado no valido");
 		} catch (Exception e) {

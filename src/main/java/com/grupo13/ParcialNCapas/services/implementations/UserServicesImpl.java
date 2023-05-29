@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.grupo13.ParcialNCapas.models.dtos.ChangePasswordDTO;
 import com.grupo13.ParcialNCapas.models.dtos.LoginDTO;
@@ -15,6 +16,7 @@ import com.grupo13.ParcialNCapas.services.UserServices;
 
 import jakarta.transaction.Transactional;
 
+@Service
 public class UserServicesImpl 
 	implements UserServices	{
 	
