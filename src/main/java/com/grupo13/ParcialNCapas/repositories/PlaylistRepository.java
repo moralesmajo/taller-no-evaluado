@@ -14,7 +14,7 @@ public interface PlaylistRepository
 	
 	Optional<Playlist> findByTitle(String title);
 	
-	List<Playlist> findAllByUserId(User user);
+	List<Playlist> findAllByUser(User user);
 	
 
 }

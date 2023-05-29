@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -27,6 +28,7 @@ import java.util.UUID;
 @Data
 @ToString(exclude = {"songs"})
 @NoArgsConstructor
+@Table(name = "Playlist")
 public class Playlist {
 	@Id
 	@Column(name = "code")
@@ -42,7 +44,7 @@ public class Playlist {
     @Column(name="description")
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_code", nullable = true)
     private User user;
     
