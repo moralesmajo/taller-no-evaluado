@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlaylistDTO {
+public class ChangePasswordDTO {
 	
-	private String title;
-	private String description;
+	private String id;
+	private String oldPassword;
+	private String newPassword; 
+
 }

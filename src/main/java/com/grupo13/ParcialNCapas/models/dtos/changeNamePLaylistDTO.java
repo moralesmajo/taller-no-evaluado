@@ -5,10 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class PlaylistDTO {
+@AllArgsConstructor
+public class changeNamePLaylistDTO {
 	
-	private String title;
-	private String description;
+	private String playlistId;
+	private String oldName;
+	private String newName;
+
 }
