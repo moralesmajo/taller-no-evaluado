@@ -1,5 +1,6 @@
 package com.grupo13.ParcialNCapas.models.dtos;
 
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,11 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChangeNameSongDTO {
 	
-	@NotEmpty()
+	@Id
+	@NotEmpty
 	private String songId;
-	@NotEmpty()
+	
+	@NotEmpty
 	private String oldName;
-	@NotEmpty()
+	
+	@NotEmpty
 	private String newName;
-
 }

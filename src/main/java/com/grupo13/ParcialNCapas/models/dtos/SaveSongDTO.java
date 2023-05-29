@@ -10,11 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SaveSongDTO {
 	
-	@NotEmpty()
+	@NotEmpty
 	private String title;
 	
-	@NotEmpty()
+	@NotEmpty
 	private int duration;
-	
-
 }

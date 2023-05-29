@@ -9,15 +9,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class RegisterUserDTO {
-		@NotEmpty()
-		private String username;
+	
+	@NotEmpty
+	private String username;
 		
-		@NotEmpty()
-		@Email()
-		private String email;
+	@NotEmpty
+	@Email
+	private String email;
 		
-		@NotEmpty()
-		@Pattern(regexp = "^[A-Z]{2}\\d{4}$")
-		private String password;
-		
+	@NotEmpty
+	@Pattern(regexp = "^[A-Z]{2}\\d{4}$")
+	private String password;
 }
