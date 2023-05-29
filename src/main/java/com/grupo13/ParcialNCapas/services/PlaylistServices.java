@@ -12,6 +12,7 @@ public interface PlaylistServices {
 
 	void save (PlaylistDTO info , User user_code) throws Exception;
 	void changePlaylistName(changeNamePLaylistDTO info)  throws Exception;
+	void addSongToPlaylist(String idPlaylist , String idSong)  throws Exception;
 	Playlist findById(String id);
 	void deletePLaylist(String id)  throws Exception ;
 	Playlist findByTitle(String title);
