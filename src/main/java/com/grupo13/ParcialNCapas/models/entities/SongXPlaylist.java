@@ -20,7 +20,7 @@ import jakarta.validation.constraints.NotNull;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "SongxPlaylist")
+@Table(name = "Songx_Playlist")
 public class SongXPlaylist {
 	@Id
 	@Column(name = "code")
@@ -39,10 +39,10 @@ public class SongXPlaylist {
  
     @NotNull()
     @Column(name="date_added")
-    private Date saveDate;
+    private java.sql.Date saveDate;
 
     // Constructor
-    public SongXPlaylist(Playlist playlist, Song song, Date savedDate) {
+    public SongXPlaylist(Playlist playlist, Song song, java.sql.Date savedDate) {
         this.playlist = playlist;
         this.song = song;
         this.saveDate = savedDate;

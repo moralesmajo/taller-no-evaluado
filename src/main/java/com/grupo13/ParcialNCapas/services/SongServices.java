@@ -13,7 +13,7 @@ public interface SongServices {
 	void deleteSong(String id) throws Exception;
 	Song findById(String id);
 	void changeNameToSong(ChangeNameSongDTO info) throws Exception;
-	List<Song> findAllByName(String name);
+	List<Song> searchSongByKeyword(String keyword);
 	List<Song> findAll();
 	
 	//TODO: dada una palabra que se encuntren canciones similares

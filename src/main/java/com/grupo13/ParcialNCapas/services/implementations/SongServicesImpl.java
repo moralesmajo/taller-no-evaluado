@@ -1,4 +1,5 @@
 package com.grupo13.ParcialNCapas.services.implementations;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -7,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.grupo13.ParcialNCapas.models.dtos.ChangeNameSongDTO;
 import com.grupo13.ParcialNCapas.models.dtos.SaveSongDTO;
+import com.grupo13.ParcialNCapas.models.entities.Playlist;
 import com.grupo13.ParcialNCapas.models.entities.Song;
+import com.grupo13.ParcialNCapas.models.entities.User;
 import com.grupo13.ParcialNCapas.repositories.SongRepository;
 import com.grupo13.ParcialNCapas.services.SongServices;
 
@@ -79,9 +82,21 @@ public class SongServicesImpl
 		return songRepository.findAll();
 	}
 
+
 	@Override
-	public List<Song> findAllByName(String name) {
-		return songRepository.findByTitle(name);
+	public List<Song> searchSongByKeyword(String keyword) {
+	
+		 List<Song> songsList = songRepository.findAll();
+		 
+	        List<Song> matchingSong = new ArrayList<>();
+
+	        for (Song songs : songsList) {
+	            if (songs.getTitle().toLowerCase().contains(keyword.toLowerCase())) {
+	            	matchingSong.add(songs);
+	            }
+	        }
+
+	        return matchingSong;
 	}
 
 }

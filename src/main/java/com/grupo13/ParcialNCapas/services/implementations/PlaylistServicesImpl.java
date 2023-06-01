@@ -1,16 +1,21 @@
 package com.grupo13.ParcialNCapas.services.implementations;
 
-import java.sql.Date;
-import java.util.Calendar;
+
+import java.util.ArrayList;
+
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.grupo13.ParcialNCapas.models.dtos.AddSongToPlaylistDTO;
 import com.grupo13.ParcialNCapas.models.dtos.PlaylistDTO;
+import com.grupo13.ParcialNCapas.models.dtos.PlaylistDetailsDTO;
+import com.grupo13.ParcialNCapas.models.dtos.SongDTO;
 import com.grupo13.ParcialNCapas.models.dtos.changeNamePLaylistDTO;
 import com.grupo13.ParcialNCapas.models.entities.Playlist;
 import com.grupo13.ParcialNCapas.models.entities.Song;
@@ -18,8 +23,10 @@ import com.grupo13.ParcialNCapas.models.entities.SongXPlaylist;
 import com.grupo13.ParcialNCapas.models.entities.User;
 import com.grupo13.ParcialNCapas.repositories.PlaylistRepository;
 import com.grupo13.ParcialNCapas.repositories.SongRepository;
-import com.grupo13.ParcialNCapas.repositories.UserRepository;
+import com.grupo13.ParcialNCapas.repositories.SongXPlaylistRepository;
+
 import com.grupo13.ParcialNCapas.services.PlaylistServices;
+import com.grupo13.ParcialNCapas.services.UserServices;
 
 import jakarta.transaction.Transactional;
 
@@ -30,21 +37,36 @@ public class PlaylistServicesImpl implements PlaylistServices {
 	PlaylistRepository playlistRepository;
 
 	@Autowired
-	UserRepository userRepository;
+	UserServices userServices;
 	
 	@Autowired
 	SongRepository songRepository;
 	
+	@Autowired
+	SongXPlaylistRepository songXPlaylistRepository;
+	
 
 	@Override
 	@Transactional(rollbackOn = Exception.class)
-	public void save(PlaylistDTO info, User user) throws Exception {
+	public boolean save(PlaylistDTO info, User user) throws Exception {
+		
+		List<Playlist> existplaylist = findAllByUserId(user.getUsername());
+		existplaylist = findAllByUserId(user.getEmail());
+		for (Playlist playlist : existplaylist)
+		{
+			if(playlist.getTitle().equals(info.getTitle())) return false;
+				
+		}
+		
 		Playlist playlist = new Playlist(
-
-				info.getTitle(), info.getDescription(), user);
+				info.getTitle(),
+				info.getDescription(),
+				user);
 
 		playlistRepository.save(playlist);
-
+		
+		return true;
+		
 	}
 
 	@Override
@@ -65,17 +87,10 @@ public class PlaylistServicesImpl implements PlaylistServices {
 
 	@Override
 	@Transactional(rollbackOn = Exception.class)
-	public List<Playlist> findAllByUserId(String id) throws Exception {
-		try {
-			UUID userId = UUID.fromString(id);
-			User user = userRepository.findById(userId).orElseThrow(() -> new Exception("Usuario no encontrado"));
-
-			return playlistRepository.findAllByUser(user);
-		} catch (IllegalArgumentException e) {
-			throw new Exception("ID ingresado no valido");
-		} catch (Exception e) {
-			throw new Exception("Error al buscr playlist" + e.getMessage());
-		}
+	public List<Playlist> findAllByUserId(String username) throws Exception {
+		User user = userServices.findByName(username);
+		return playlistRepository.findByUserCode(user.getCode());
+			
 	}
 
 	@Override
@@ -149,27 +164,90 @@ public class PlaylistServicesImpl implements PlaylistServices {
 
 	@Override
 	@Transactional(rollbackOn = Exception.class)
-	public void addSongToPlaylist(AddSongToPlaylistDTO info) throws Exception {
-		
-		UUID playlistCode = UUID.fromString(info.getPlaylistCode());
-		Playlist playlist = playlistRepository.findById(playlistCode)
-				.orElseThrow(() -> new IllegalArgumentException("Playlist no encontrada"));
-		
-		UUID songCode  = UUID.fromString(info.getSongCode());
-		Song song = songRepository.findById(songCode)
-				.orElseThrow(() -> new IllegalArgumentException("Cancion no encontrada"));
-		
-		
-		Calendar calendar = Calendar.getInstance();
-		Date currentDate = (Date) calendar.getTime();
-		SongXPlaylist songXPlaylist = new SongXPlaylist(playlist, song, currentDate );
-		
-		playlist.getSongs().add(songXPlaylist);
+	public boolean addSongToPlaylist(AddSongToPlaylistDTO info) throws Exception {
+			 UUID codeplylist = UUID.fromString(info.getPlaylistCode());
+	        Playlist playlist = playlistRepository.findById(codeplylist).orElseThrow(()-> new IllegalArgumentException("Playlist no encontrada"));
+	        if (playlist == null) {
+	        	 return false;
+	        }
 
-	    playlistRepository.save(playlist);
-		
-		
-		
+	        UUID codesong = UUID.fromString(info.getSongCode());
+	        Song song = songRepository.findById(codesong).orElseThrow(()-> new IllegalArgumentException("Song no encontrada"));;
+	        if (song == null) {
+	            return false; 
+	        }
+
+	        List<SongXPlaylist> songsInPlaylist = playlist.getSongs();
+	        for (SongXPlaylist songXPlaylist : songsInPlaylist) {
+	            if (songXPlaylist.getSong().getCode().equals(codesong)) {
+	                return false; 
+	            }
+	        }
+	        
+	        java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+	        SongXPlaylist songXPlaylist = new SongXPlaylist(playlist, song, currentDate);
+	        songXPlaylistRepository.save(songXPlaylist);
+	       
+	        return true;
+	    }
+
+	@Override
+	public List<Playlist> searchPlaylistsByKeyword(String username, String keyword) {
+			
+		User user =userServices.findByName(username);
+		 List<Playlist> userPlaylists = playlistRepository.findByUserCode(user.getCode());
+		 
+	        List<Playlist> matchingPlaylists = new ArrayList<>();
+
+	        for (Playlist playlist : userPlaylists) {
+	            if (playlist.getTitle().toLowerCase().contains(keyword.toLowerCase())) {
+	                matchingPlaylists.add(playlist);
+	            }
+	        }
+
+	        return matchingPlaylists;
+	}
+	
+	
+	public PlaylistDetailsDTO getPlaylistDetails(String playlistCode)  throws Exception  {
+		 UUID codeplylist = UUID.fromString(playlistCode);
+		 
+		 Playlist playlist = playlistRepository.findById(codeplylist)
+	                .orElseThrow(() -> new NotFoundException());
+
+	        if (playlist == null) {
+	            throw new NotFoundException();
+	        }
+  ;
+        
+        List<SongXPlaylist> songXPlaylists = playlist.getSongs();
+        
+        List<SongDTO> songDTOs = new ArrayList<>();
+        int totalDurationInSeconds = 0;
+        
+
+        for (SongXPlaylist songXPlaylist : songXPlaylists) {
+            Song song = songXPlaylist.getSong();
+            int durationInSeconds = song.getDuration();
+            totalDurationInSeconds = totalDurationInSeconds + song.getDuration();
+            
+            int minutes = durationInSeconds / 60;
+            int seconds = durationInSeconds % 60;
+            String durationFormatted = String.format("%02d:%02d", minutes, seconds);
+
+            SongDTO songDTO = new SongDTO(song.getTitle(), durationFormatted, songXPlaylist.getSaveDate());
+            songDTOs.add(songDTO);
+        }
+     
+
+        int totalDurationInMinutes = totalDurationInSeconds / 60;
+        int totalDurationSeconds = totalDurationInSeconds % 60;
+        String totalDurationFormatted = String.format("%02d:%02d", totalDurationInMinutes, totalDurationSeconds);
+
+        return new PlaylistDetailsDTO(playlist.getTitle(), playlist.getDescription(), songDTOs, totalDurationFormatted);
+    }
+	
+
 	}
 
-}
+

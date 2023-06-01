@@ -33,7 +33,7 @@ public class UserServicesImpl
 				);
 		
 		userRepository.save(user);
-		// TODO Auto-generated method stub
+		
 		
 	}
 
@@ -64,32 +64,35 @@ public class UserServicesImpl
 		
 		if(user == null) throw new Exception("Usuario no econtrado");
 		
-		if(!user.getPassword().equals(info.getOldPassword())) {
-			throw new Exception("La contraseña del uasurio");
+		String password = removeEncryptedSuffix(user.getPassword());
+		if(!password.equals(info.getOldPassword())) {
+			throw new Exception("La contraseña del usuario no coincide");
 			}else {
-		
-			user.setPassword(info.getNewPassword());
+				String encrPassword = info.getNewPassword() + "_encrypted";
+			user.setPassword(encrPassword);
 			userRepository.save(user);
 			}
 	}
 
 	@Override
-	public void logIn(LoginDTO info) throws Exception {
+	public User logIn(LoginDTO info) throws Exception {
 		User user;
 		if (info.getUserName() != null) {
-			user = userRepository.findByUsername(info.getUserName())
-					.orElseThrow(() -> new Exception("username invalido"));
-		} else {
-			user = userRepository.findByEmail(info.getEmail()).orElseThrow(() -> new Exception("email invalido"));
-		}
-
-		String storedPassword = removeEncryptedSuffix(user.getPassword());
-		if (storedPassword.equals(info.getPassword())) {
-			System.out.println("Inicio de seccion valido");
-		} else {
-			throw new Exception("Contraseña inavalida");
+			user = userRepository.findByUsername(info.getUserName());
+					
+		} else  {
+			user = userRepository.findByEmail(info.getEmail());
+			
 		}
 		
+		if(user != null) {
+			if (user.getPassword().equals(info.getPassword())) 
+				return user;
+	
+		}
+	
+		
+		return null;
 		
 	}
 	
@@ -99,6 +102,22 @@ public class UserServicesImpl
 	    }
 	    return password;
 	}
-	
+
+	@Override
+	public void ChangeUserName(String username) throws Exception {
+			// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public User findByName(String name) {
+
+		User user = userRepository.findByUsername(name);
+		if (user != null)
+			return user;
+		user = userRepository.findByEmail(name);
+		return user;
+
+	}
 
 }

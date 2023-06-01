@@ -2,6 +2,7 @@ package com.grupo13.ParcialNCapas.models.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +23,8 @@ import jakarta.validation.constraints.Size;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "Song")
+@ToString(exclude = {"playlists"})
+@Table(name = "song")
 public class Song {
 	@Id
 	@Column(name = "code")

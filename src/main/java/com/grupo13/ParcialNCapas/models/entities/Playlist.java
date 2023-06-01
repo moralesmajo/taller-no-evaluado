@@ -28,7 +28,7 @@ import java.util.UUID;
 @Data
 @ToString(exclude = {"songs"})
 @NoArgsConstructor
-@Table(name = "Playlist")
+@Table(name = "playlist")
 public class Playlist {
 	@Id
 	@Column(name = "code")
@@ -43,9 +43,10 @@ public class Playlist {
     @Size(max = 100, message = "La descripción de la playlist debe tener como máximo 100 caracteres")
     @Column(name="description")
     private String description;
-
+    
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_code", nullable = true)
+    @JsonIgnore
     private User user;
     
     @OneToMany(mappedBy = "playlist", fetch = FetchType.LAZY)

@@ -10,9 +10,11 @@ import com.grupo13.ParcialNCapas.models.entities.User;
 public interface UserServices {
 	
 	void register (RegisterUserDTO info) throws Exception;
-	void logIn (LoginDTO info) throws Exception;
+	User logIn (LoginDTO info) throws Exception;
 	User findById(String id );
+	User findByName(String name);
 	void changePassword(ChangePasswordDTO info) throws Exception;
+	void ChangeUserName(String username ) throws Exception;
 	List<User> findAll();
 
 }
